@@ -1,0 +1,9 @@
+packages:
+cv2
+time
+dlib
+scipy
+imutils
+
+additional files
+shape_predictor_68_face_landmarks.dat
