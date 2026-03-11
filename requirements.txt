@@ -1,9 +1,5 @@
-packages:
-cv2
-time
-dlib
-scipy
-imutils
-
-additional files
-shape_predictor_68_face_landmarks.dat
+opencv-python>=4.5.0,<5.0.0
+dlib>=19.22.0
+scipy>=1.7.0
+imutils>=0.5.4
+numpy>=1.21.0

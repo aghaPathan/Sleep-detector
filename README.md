@@ -1,61 +1,104 @@
 # Sleep Detector
 
-A computer vision application that detects drowsiness by monitoring eye state using facial recognition.
-
-## Overview
-
-This script uses OpenCV to detect faces and track eye state (open/closed) in real-time video, designed to alert drowsy drivers.
+Real-time drowsiness detection using webcam video and dlib facial landmarks. Monitors eye state via the Eye Aspect Ratio (EAR) algorithm and alerts when eyes remain closed for a configurable duration.
 
 ## Features
 
-- 👁️ **Eye State Detection** — Monitors if eyes are open or closed
-- 😴 **Drowsiness Alert** — Detects when driver may be falling asleep
-- 📹 **Real-time Processing** — Works with live webcam feed
-- 🎯 **Face Tracking** — Locates and tracks face in frame
+- **Eye Aspect Ratio (EAR) detection** — Computes EAR from dlib's 68-point facial landmarks to determine if eyes are open or closed
+- **Configurable thresholds** — EAR sensitivity, alert duration, and camera index are all CLI arguments
+- **Visual feedback** — Green (awake), yellow (eyes closing), red (drowsy) eye contour overlays with live EAR display
+- **Audible alert with cooldown** — Terminal bell fires on drowsiness detection with a 3-second cooldown to prevent spam
+- **Graceful shutdown** — Handles SIGINT/SIGTERM to properly release camera resources
 
 ## Requirements
 
-- Python 3.x
-- OpenCV (`cv2`)
-- dlib (for facial landmarks)
-- NumPy
+- Python 3.8+
+- Webcam
+- dlib shape predictor model (see [Setup](#setup))
 
 ## Installation
 
 ```bash
-pip install opencv-python dlib numpy
+# Clone the repository
+git clone https://github.com/aghaPathan/Sleep-detector.git
+cd Sleep-detector
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Download the dlib facial landmark model (~99 MB)
+python download_model.py
 ```
 
 ## Usage
 
 ```bash
-python sleep_detector.py
+# Run with defaults (threshold=0.2, alert after 5s, camera 0)
+python detect_sleep.py
+
+# Custom settings
+python detect_sleep.py --threshold 0.25 --duration 3 --camera 1
+
+# Verbose logging
+python detect_sleep.py -v
 ```
+
+### CLI Options
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--model` | `shape_predictor_68_face_landmarks.dat` | Path to dlib model file |
+| `--threshold` | `0.2` | EAR value below which eyes are considered closed |
+| `--duration` | `5` | Seconds eyes must stay closed before alert |
+| `--camera` | `0` | Camera device index |
+| `-v, --verbose` | off | Enable debug logging |
+
+Press **q** to quit the detector.
 
 ## How It Works
 
-1. Captures video from webcam
-2. Detects face using Haar Cascade / dlib
-3. Identifies eye regions
-4. Calculates eye aspect ratio (EAR)
-5. Alerts if eyes closed for extended period
+1. Captures video frames from the webcam
+2. Detects faces using dlib's frontal face detector
+3. Extracts 68 facial landmarks and isolates eye regions
+4. Computes Eye Aspect Ratio (EAR) from vertical and horizontal eye distances
+5. Tracks how long EAR stays below threshold
+6. Triggers alert (audible bell + red contour) when eyes are closed beyond the configured duration
+
+## Running Tests
+
+```bash
+python -m pytest tests/ -v
+```
+
+## Project Structure
+
+```
+Sleep-detector/
+├── detect_sleep.py       # Main application
+├── download_model.py     # Model download helper
+├── requirements.txt      # Python dependencies
+├── pyproject.toml        # Package configuration
+├── LICENSE               # MIT license
+├── tests/
+│   └── test_detect_sleep.py
+└── .github/
+    └── workflows/
+        └── pr-checks.yml # CI pipeline
+```
 
 ## Applications
 
 - Driver drowsiness detection
 - Workplace fatigue monitoring
-- Safety systems
+- Safety-critical monitoring systems
 
 ## License
 
-MIT
-
----
+[MIT](LICENSE)
 
 ## CI Status
 
 All PRs are checked for:
-- ✅ Syntax (Python, JS, TS, YAML, JSON, Dockerfile, Shell)
-- ✅ Secrets (No hardcoded credentials)
-- ✅ Security (High-severity vulnerabilities)
-
+- Syntax (Python, JS, TS, YAML, JSON, Dockerfile, Shell)
+- Secrets (no hardcoded credentials)
+- Security (high-severity vulnerabilities)

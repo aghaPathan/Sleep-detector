@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "sleep-detector"
+version = "2.0.0"
+description = "Real-time drowsiness detection using webcam and dlib facial landmarks"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.8"
+dependencies = [
+    "opencv-python>=4.5.0,<5.0.0",
+    "dlib>=19.22.0",
+    "scipy>=1.7.0",
+    "imutils>=0.5.4",
+    "numpy>=1.21.0",
+]
+
+[project.scripts]
+sleep-detector = "detect_sleep:main"
+
+[project.urls]
+Repository = "https://github.com/aghaPathan/Sleep-detector"
